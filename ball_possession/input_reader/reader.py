@@ -13,7 +13,9 @@ class Reader:
     ### Desctructor ###
     def __close__(self):
         self._path = None
-
+        self.__list_of_files = None
+        self.__list_of_files = None
+        
     ### Getters ###
     def get_path(self):
         return self._path
