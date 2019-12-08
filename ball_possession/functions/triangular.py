@@ -1,6 +1,6 @@
-class triangular:
+class Triangular:
     ### Constructor ###
-    def __init__(self, init, end, center=None, maximum=1, minimum=0):
+    def __init__(self, init, end, center=None, peak=1, floor=0):
         # initialize attributes
         self._init = init
         self._end = end
@@ -8,9 +8,9 @@ class triangular:
             #using property to test if its bewtween init and end
             self.center = center
         else:
-            self._center = (init - end) / 2
-        self._maximum = maximum
-        self._minimum = minimum
+            self._center = (end + init) / 2
+        self._peak = peak
+        self._floor = floor
 
     ### Desctructor ###
     def __close__(self):
@@ -18,8 +18,8 @@ class triangular:
         self._function = None
         self._init = None
         self._end = None
-        self._maximum = None
-        self._minimum = None
+        self._peak = None
+        self._floor = None
 
     ### Getters and Setter (as Properties) ###
     ## init
@@ -66,44 +66,48 @@ class triangular:
             raise ValueError(
                 'Error: Function center element must be float or integer')
 
-    ## maximum
+    ## peak
     @property
-    def maximum(self):
-        return self._maximum
+    def peak(self):
+        return self._peak
 
-    @maximum.setter
-    def maximum(self, maximum):
-        if type(maximum) == float or type(maximum) == int:
-            self._maximum = maximum
+    @peak.setter
+    def peak(self, peak):
+        if type(peak) == float or type(peak) == int:
+            self._peak = peak
         else:
             raise ValueError(
-                'Error: Function maximum element must be float or integer')
+                'Error: Function peak element must be float or integer')
 
-    ## minimum
+    ## floor
     @property
-    def minimum(self):
-        return self._minimum
+    def floor(self):
+        return self._floor
 
-    @minimum.setter
-    def minimum(self, minimum):
-        if type(minimum) == float or type(minimum) == int:
-            self._minimum = minimum
+    @floor.setter
+    def floor(self, floor):
+        if type(floor) == float or type(floor) == int:
+            self._floor = floor
         else:
             raise ValueError(
-                'Error: Function minimum element must be float or integer')
+                'Error: Function floor element must be float or integer')
 
     ### Methods ###
     def function(self, x):
-        if x <= self._center:
-            delta_y = self._maximum - self._minimum
+        if x <= self._init:
+            return self._floor
+
+        elif x <= self._center:
+            delta_y = self._peak - self._floor
             delta_x = self._center - self._init
             slope = delta_y / delta_x
-            return slope * (x - self._init)
+            return slope * (x - self._init) + self._floor
 
-        if x > self._center:
-            delta_y = self._minimum - self._maximum
+        elif x <= self._end:
+            delta_y = self._floor - self._peak
             delta_x = self._end - self._center
             slope = delta_y / delta_x
-            return self._maximum + slope * (x - self._center)
+            return slope * (x - self._center) + self._peak
 
-        return self._minimum
+        else:
+            return self._floor
