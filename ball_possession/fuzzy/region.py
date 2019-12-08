@@ -31,7 +31,7 @@ class Region:
         return self._name
 
     @name.setter
-    def set_name(self, name):
+    def name(self, name):
         if type(name) == str:
             self._name = name
         else:
@@ -43,7 +43,7 @@ class Region:
         return self._npoints
 
     @npoints.setter
-    def set_npoints(self, npoints):
+    def npoints(self, npoints):
         if type(npoints) == int:
             self._npoints = npoints
             self._fuzzy = self.__generate_fuzzy()
@@ -56,7 +56,7 @@ class Region:
         return self._init
 
     @init.setter
-    def set_init(self, init):
+    def init(self, init):
         if type(init) == float or type(init) == int:
             self._init = init
             for fuzzy_element in self._fuzzy:
@@ -75,7 +75,7 @@ class Region:
         return self._end
 
     @end.setter
-    def set_end(self, end):
+    def end(self, end):
         if type(end) == float or type(end) == int:
             self._end = end
             for fuzzy_element in self._fuzzy:
@@ -94,7 +94,7 @@ class Region:
         return self._size
 
     @size.setter
-    def set_size(self, size):
+    def size(self, size):
         raise ValueError('Error: Can\'t directly set size')
 
     ## function
@@ -103,7 +103,7 @@ class Region:
         return self._function
 
     @function.setter
-    def set_function(self, function):
+    def function(self, function):
         if type(function) == 'function':
             self._function = function
             self._fuzzy = self.__generate_fuzzy()
@@ -116,7 +116,7 @@ class Region:
         return self._fuzzy
 
     @fuzzy.setter
-    def set_fuzzy(self, fuzzy):
+    def fuzzy(self, fuzzy):
         if type(fuzzy) == list:
             self._fuzzy = fuzzy
             self._function = None
