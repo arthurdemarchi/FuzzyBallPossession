@@ -14,11 +14,12 @@ $ python3 -m ballpossession
 ### Prerequisites
 
 
-Git(optional) and python 3.
+Git(optional) and python 3, Python Libs (pandas)
 
 ```
 $ sudo dnf install python37
 $ sudo dnf install git
+$ pip3 install --user pandas
 ```
 
 
@@ -35,7 +36,8 @@ $ git clone https://github.com/arthurdemarchi/FuzzyEPCs.git
 Prepare desired file to analise:
     File must be in CSV format
     File must have the header:
-           
+    * "cycle,team_name,player_num,ball_x,ball_y,ball_vx,ball_vy,player_x,player_y,player_vx,player_vy,playmode"
+    data must be relative to header
 
 Put desired file in the right path
 ```
@@ -47,51 +49,14 @@ Run program
 $ python3 -m ballpossession
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
-
 ## Running the tests
 
-Explain how to run the automated tests for this system
+There are no atuomated tests yet.
 
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* **Arthur Demarchi** - *Initial work* - [arthurdemarchi](https://github.com/arthurdemarchi)
 
 ## License
 
@@ -99,6 +64,5 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* Thanks to Robocup for archiving logs
+* Thanks to zenoyang for the 2DLogMining Tool
