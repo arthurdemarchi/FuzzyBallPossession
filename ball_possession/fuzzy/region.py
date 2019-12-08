@@ -1,3 +1,6 @@
+from math import log
+
+
 class Region:
 
     ### Constructor ###
@@ -8,9 +11,8 @@ class Region:
         self._init = init
         self._end = end
         self._size = self._end - self._init
-        self._function = funtion
+        self._function = function
         self._fuzzy = self.__generate_fuzzy()
-       
 
     ### Desctructor ###
     def __close__(self):
@@ -27,6 +29,7 @@ class Region:
     @property
     def name(self):
         return self._name
+
     @name.setter
     def set_name(self, name):
         if type(name) == str:
@@ -38,6 +41,7 @@ class Region:
     @property
     def npoints(self):
         return self._npoints
+
     @npoints.setter
     def set_npoints(self, npoints):
         if type(npoints) == int:
@@ -45,11 +49,12 @@ class Region:
             self._fuzzy = self.__generate_fuzzy()
         else:
             raise ValueError('Error: Region number of points must be integer')
-    
+
     ## init
     @property
     def init(self):
         return self._init
+
     @init.setter
     def set_init(self, init):
         if type(init) == float or type(init) == int:
@@ -57,16 +62,18 @@ class Region:
             for fuzzy_element in self._fuzzy:
                 if fuzzy_element['x'] < init:
                     self._fuzzy.remove(fuzzy_element)
-            
+
             self._npoints == len(self._fuzzy)
             self._size = self._end - self._init
         else:
-            raise ValueError('Error: Region initial element must be float or integer')
-    
+            raise ValueError(
+                'Error: Region initial element must be float or integer')
+
     ## end
     @property
     def end(self):
         return self._end
+
     @end.setter
     def set_end(self, end):
         if type(end) == float or type(end) == int:
@@ -74,16 +81,18 @@ class Region:
             for fuzzy_element in self._fuzzy:
                 if fuzzy_element['x'] > end:
                     self._fuzzy.remove(fuzzy_element)
-            
+
             self._npoints == len(self._fuzzy)
             self._size = self._end - self._init
         else:
-            raise ValueError('Error: Region last element must be float or integer')
+            raise ValueError(
+                'Error: Region last element must be float or integer')
 
     ## size
     @property
     def size(self):
         return self._size
+
     @size.setter
     def set_size(self, size):
         raise ValueError('Error: Can\'t directly set size')
@@ -92,18 +101,20 @@ class Region:
     @property
     def function(self):
         return self._function
+
     @function.setter
     def set_function(self, function):
         if type(function) == 'function':
             self._function = function
-            self._fuzzy = __generate_fuzzy()
+            self._fuzzy = self.__generate_fuzzy()
         else:
             raise ValueError('Error: region function must be of function type')
-   
+
     ## fuzzy
     @property
     def fuzzy(self):
         return self._fuzzy
+
     @fuzzy.setter
     def set_fuzzy(self, fuzzy):
         if type(fuzzy) == list:
@@ -111,26 +122,29 @@ class Region:
             self._function = None
             self._npoints = len(fuzzy)
             self._init = fuzzy[0]['x']
-            self._end = fuzzy[self._npoints-1]['x']
+            self._end = fuzzy[self._npoints - 1]['x']
             self._size = self._end - self._init
         else:
-            raise ValueError('Error: region fuzzy must be a list')     
-    
+            raise ValueError('Error: region fuzzy must be a list')
+
     ### Private Methods ###
-    def __discretize(self, x)
-        discretized_x  = (x/self.npoints)*self.__size
-        ndigits = int(math.log(self.npoints, 10)+1)
+    def __discretize(self, x):
+        discretized_x = (x / self.npoints) * self._size
+        ndigits = int(log(self.npoints, 10) + 1)
         discretized_x = round(discretized_x, ndigits)
-        discretized_x = discretized_x + self.__size
+        discretized_x = discretized_x + self._size
         return discretized_x
-    
+
     def __generate_fuzzy(self):
         if self._function == None:
-            raise ValueError('Error: This region was defined directly trhought fuzzy attribute wich means it can\'t be redifined')
-        self._fuzzy = list()
+            raise ValueError(
+                'Error: This region was defined directly trhought fuzzy attribute wich means it can\'t be redifined'
+            )
+        fuzzy = list()
         # fill self._fuzzy with fuzzy region elements and pertineces
-        for x in range (0, self.npoints):
+        for x in range(0, self.npoints):
             x = self.__discretize(x)
             u = self._function(x)
             region_item = {'x': x, 'u': u}
-            self.fuzzy.append(region_item)
+            fuzzy.append(region_item)
+        return fuzzy
