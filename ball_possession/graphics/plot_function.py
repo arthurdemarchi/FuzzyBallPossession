@@ -13,5 +13,5 @@ def plot_function(function, init=0, end=10):
     plt.ylabel('y - axis')
     plt.title('Plotted Function')
     plt.show(block=False)
-    plt.pause(1)
+    plt.pause(3)
     plt.close()

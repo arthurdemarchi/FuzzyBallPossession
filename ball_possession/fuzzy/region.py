@@ -1,4 +1,5 @@
 from math import log
+from copy import deepcopy, copy
 
 
 class Region:
@@ -58,13 +59,24 @@ class Region:
     @init.setter
     def init(self, init):
         if type(init) == float or type(init) == int:
-            self._init = init
-            for fuzzy_element in self._fuzzy:
-                if fuzzy_element['x'] < init:
-                    self._fuzzy.remove(fuzzy_element)
-
-            self._npoints == len(self._fuzzy)
-            self._size = self._end - self._init
+            if init >= self._end:
+                raise ValueError(
+                    'Error: Region inital element must be smaller than last element'
+                )
+            if init < self._init:
+                discretization_ration = self._size / self._npoints
+                self._init = init
+                self._size = self._end - init
+                self._npoints = round(self._size / discretization_ration)
+                self._fuzzy = self.__generate_fuzzy()
+            else:
+                list_to_iterate = deepcopy(self._fuzzy)
+                for fuzzy_element in list_to_iterate:
+                    if fuzzy_element['x'] < init:
+                        self._fuzzy.remove(fuzzy_element)
+                self._init = init
+                self._npoints = len(self._fuzzy)
+                self._size = self._end - self._init
         else:
             raise ValueError(
                 'Error: Region initial element must be float or integer')
@@ -77,13 +89,24 @@ class Region:
     @end.setter
     def end(self, end):
         if type(end) == float or type(end) == int:
-            self._end = end
-            for fuzzy_element in self._fuzzy:
-                if fuzzy_element['x'] > end:
-                    self._fuzzy.remove(fuzzy_element)
-
-            self._npoints == len(self._fuzzy)
-            self._size = self._end - self._init
+            if end <= self._init:
+                raise ValueError(
+                    'Error: Region last element must be greater than initial element'
+                )
+            if end > self._end:
+                discretization_ration = self._size / self._npoints
+                self._end = end
+                self._size = end - self._init
+                self._npoints = round(self._size / discretization_ration)
+                self._fuzzy = self.__generate_fuzzy()
+            else:
+                list_to_iterate = deepcopy(self._fuzzy)
+                for fuzzy_element in list_to_iterate:
+                    if fuzzy_element['x'] > end:
+                        self._fuzzy.remove(fuzzy_element)
+                self._end = end
+                self._npoints = len(self._fuzzy)
+                self._size = self._end - self._init
         else:
             raise ValueError(
                 'Error: Region last element must be float or integer')
@@ -132,7 +155,7 @@ class Region:
         discretized_x = (x / self.npoints) * self._size
         ndigits = int(log(self.npoints, 10) + 1)
         discretized_x = round(discretized_x, ndigits)
-        discretized_x = discretized_x + self._size
+        discretized_x = discretized_x + self._init
         return discretized_x
 
     def __generate_fuzzy(self):
