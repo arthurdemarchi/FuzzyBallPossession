@@ -31,24 +31,28 @@ RS = (2*KA)/1.5 # REACTION SPEED
 ## input 1: distance from player to ball
 dist_minor = Region('D1', 1000, 0, 100, Trapezoid(0, 1.5*CPD, 0, CPD).function)
 dist_fair = Region('D2', 1000, 0, 100, Triangular(CPD, 1.5*KA, KA).function)
-dist_great = Region('D3', 1000, 0, 100, Trapezoid(KA, 100, DD, 100).function)
+dist_great = Region('D3', 10000, 0, 100, Trapezoid(KA, 100, DD, 100).function)
 distance = [dist_minor, dist_fair, dist_great]
+plot_region(distance, 'Distância do Jogador à Bola', write=True, file='figures/input1.png')
 
 ## input 2: relative speed from ball to player
-rspeed_minor = Region('RS1', 50, 0, 5, Trapezoid(0, 1.5*RS, 0, RS).function)
-rspeed_great = Region('RS2', 50, 0, 5, Trapezoid(RS, 5, 1.5*RS, 5).function)
+rspeed_minor = Region('RS1', 500, 0, 5, Trapezoid(0, 1.5*RS, 0, RS).function)
+rspeed_great = Region('RS2', 500, 0, 5, Trapezoid(RS, 5, 1.5*RS, 5).function)
 relative_speed = [rspeed_minor, rspeed_great]
+plot_region(relative_speed, 'Velocidade Relativa do Jogador à Bola', write=True, file='figures/input2.png')
 
 ## input 3: ball absolute speed
-bspeed_minor = Region('BS1', 100, 0, 10, Trapezoid(0, 1.5*PMS, 0, PMS).function)
-bspeed_great = Region('BS2', 100, 0, 10, Trapezoid(PMS, 10, PMS, 10).function)
+bspeed_minor = Region('BS1', 1000, 0, 10, Trapezoid(0, 1.5*PMS, 0, PMS).function)
+bspeed_great = Region('BS2', 1000, 0, 10, Trapezoid(PMS, 10, 1.5*PMS, 10).function)
 ball_speed = [bspeed_minor, bspeed_great]
+plot_region(ball_speed, 'Velocidade Absoluta da Bola', write=True, file='figures/input3.png')
 
 # output
 ## ball possession
-bposs_false = Region('False', 100, 0, 1, Triangular(0, 0.75).function)
-bposs_true = Region('True', 100, 0, 1, Triangular(0.5, 1).function)
+bposs_false = Region('False', 1000, 0, 1, Triangular(0, 0.75).function)
+bposs_true = Region('True', 1000, 0, 1, Triangular(0.5, 1).function)
 ball_possession = [bposs_false, bposs_true]
+plot_region(ball_speed, 'Posse de Bola', write=True, file='figures/output.png')
 
 #########################################################
 #                                                       #
