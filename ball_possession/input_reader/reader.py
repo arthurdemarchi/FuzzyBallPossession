@@ -1,4 +1,4 @@
-from pandas import read_csv
+from pandas import read_csv, concat, DataFrame
 from os import listdir
 from os.path import isdir
 
@@ -65,3 +65,10 @@ class Reader:
         if self.__list_index >= len(self.__list_of_files):
             return False, distance, relative_speed, ball_speed
         return True, distance, relative_speed, ball_speed
+
+    def write_output(self, possession):
+        ballPossession = DataFrame(possession, columns = ['ballPossesion'])
+        data = read_csv(self.__list_of_files[self.__list_index-1])
+        data = concat([data, ballPossession], axis=1, sort=False)
+        write_path = self.__list_of_files[self.__list_index-1].replace('.csv', '.out')
+        data.to_csv(write_path, sep=',', encoding='utf-8')

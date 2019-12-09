@@ -100,19 +100,19 @@ class Trapezoid:
 
     ### Methods ###
     def function(self, x):
-        if x <= self._init:
+        if x < self._init:
             return self._floor
 
-        elif x <= self._peak_init:
+        elif x < self._peak_init:
             delta_y = self._peak - self._floor
             delta_x = self._peak_init - self._init
             slope = delta_y / delta_x
             return slope * (x - self._init) + self._floor
 
-        elif x <= self._peak_end:
+        elif x < self._peak_end:
             return self._peak
 
-        elif x <= self._end:
+        elif x < self._end:
             delta_y = self._floor - self._peak
             delta_x = self._end - self._peak_end
             slope = delta_y / delta_x

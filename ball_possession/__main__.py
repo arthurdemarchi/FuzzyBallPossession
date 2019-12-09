@@ -3,6 +3,8 @@ from .functions.triangular import Triangular
 from .functions.trapezoid import Trapezoid
 from .fuzzy.region import Region
 from .graphics.plot_region import plot_region
+from .fuzzy.operators import inference, defuzzyficate, classificate
+
 import pandas as pd
 
 #########################################################
@@ -40,12 +42,12 @@ relative_speed = [rspeed_minor, rspeed_great]
 ## input 3: ball absolute speed
 bspeed_minor = Region('BS1', 100, 0, 10, Trapezoid(0, 1.5*PMS, 0, PMS).function)
 bspeed_great = Region('BS2', 100, 0, 10, Trapezoid(PMS, 10, PMS, 10).function)
-ball_speed = [bspeed_minor, bspeed_minor]
+ball_speed = [bspeed_minor, bspeed_great]
 
 # output
 ## ball possession
-bposs_false = Region('BPF', 10, 0, 1, Triangular(0, 0.75).function)
-bposs_true = Region('BPT', 10, 0, 1, Triangular(0.5, 1).function)
+bposs_false = Region('False', 100, 0, 1, Triangular(0, 0.75).function)
+bposs_true = Region('True', 100, 0, 1, Triangular(0.5, 1).function)
 ball_possession = [bposs_false, bposs_true]
 
 #########################################################
@@ -67,11 +69,23 @@ def rules(dist, rspeed, bspeed):
     if dist == dist_great and rspeed == rspeed_great and bspeed == bspeed_minor: return bposs_false
     if dist == dist_great and rspeed == rspeed_great and bspeed == bspeed_great: return bposs_false
 
-
+#########################################################
+#                                                       #
+#                      OPERATION                        #
+#                                                       #
+#########################################################
 #create reader with default data path values
 reader = Reader()
 
 #while there's a file to read run application
+possessions = []
 status = True
 while status:
-    status, distance, relative_speed, ball_speed = reader.read_next_file()
+    status, distance_values, relative_speed_values, ball_speed_values = reader.read_next_file()
+    for i in range(len(distance_values)):
+        fuzzy = inference([distance, relative_speed, ball_speed], [distance_values[i], relative_speed_values[i], ball_speed_values[i]], rules, 'mandani', 'max')
+        value = defuzzyficate(fuzzy, 'cda')
+        classification = classificate(ball_possession, value)
+        possessions.append(classification)
+        print('    ', i, 'of ', len(distance_values))
+    reader.write_output(possessions)

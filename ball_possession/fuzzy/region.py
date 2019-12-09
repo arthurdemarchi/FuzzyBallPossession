@@ -179,3 +179,55 @@ class Region:
                 return item['u']
             if x < item['x']:
                 return self.fuzzy[i-1]['u']
+    
+    def is_active(self, x):
+        if self.get_u(x) == 0: 
+            return False
+        else:
+            return True
+
+    def mandani(self, treshold):
+        for item in self._fuzzy:
+            item['u'] = min(item['u'], treshold)
+        self.fuzzy = self._fuzzy
+
+    def zadeh(self, treshold):
+        for item in self._fuzzy:
+            item['u'] = max(1-treshold, min(item['u'], treshold))
+        self.fuzzy = self._fuzzy
+
+    def larsen(self, treshold):
+        for item in self._fuzzy:
+            item['u'] = item['u']*treshold
+        self.fuzzy = self._fuzzy
+
+    def cda(self):
+        u_times_x = 0
+        u = 0
+        for item in self.fuzzy:
+            u_times_x = u_times_x + item['u']*item['x']
+            u = u + item['u']
+        return round(u_times_x/u, 2)
+
+    def mdm(self):
+        max_u = 0
+        for item in self.fuzzy:
+            max_u = max(item['u'], max_u)
+		
+        sum_x = 0
+        number_of_x = 0
+        for item in self.fuzzy:
+            if item['u'] == max_u:
+                sum_x = sum_x + item['x']
+                number_of_x = number_of_x + 1
+        return round(sum_x/number_of_x, 2)
+
+    def mpm(self):
+        max_u = 0
+        for item in self.fuzzy:
+            max_u = max(item['u'], max_u)
+
+        for item in self.fuzzy:
+            if item['u'] == max_u:
+                return round(item['x'], 2)
+

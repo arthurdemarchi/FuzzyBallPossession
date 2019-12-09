@@ -15,8 +15,8 @@ class Constant:
     def value(self):
         return self._value
 
-    @init.setter
-    def init(self, value):
+    @value.setter
+    def value(self, value):
         if type(value) == float or type(value) == int:
             self._value = value
         else:

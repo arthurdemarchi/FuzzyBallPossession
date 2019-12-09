@@ -42,7 +42,7 @@ def union(regions, union_type):
 	result.fuzzy = union
 	return result 
 
-def implication(region, implication, treshold):
+def implicate(region, implication, treshold):
 	if implication == 'mandani':
 		region.mandani(treshold)
 	elif implication == 'zadeh':
@@ -50,7 +50,7 @@ def implication(region, implication, treshold):
 	elif implication == 'larsen':
 		region.larsen(treshold)
 
-def agregation(regions, agregation):
+def agregate(regions, agregation):
 	if agregation == 'max':
 		return union(regions, 'max')
 	if agregation == 'no_agregation':
@@ -64,26 +64,49 @@ def get_treshold(active_regions, x):
 		treshold = min(treshold, active_regions[i].get_u(x[i]))
 	return treshold
 
-def mono_inference(self, inputs, x, rules, implication, agregation):
+def mono_inference(inputs, x, rules, implication, agregation):
 	actives = is_active(inputs, x)
 	outputs = []
 	for active in actives:
 		treshold = active.get_u(x)
 		output = deepcopy(rules(active))
-		implication(output, implication, treshold)
+		implicate(output, implication, treshold)
 		outputs.append(output)
-	return agregation(outputs, agregation)
+	return agregate(outputs, agregation)
 
-def inference(self, inputs, x, rules, implication, agregation):
+def inference(inputs, x, rules, implication, agregation):
 	active = []
 	outputs = []
+	
 	for i in range(len(inputs)):
 		active.append(is_active(inputs[i], x[i]))
+
+	active_rules = list(product(*active))
 	
-	active_rules = product(*active)
 	for active_rule in active_rules:
 		treshold = get_treshold(active_rule, x)
 		output = deepcopy(rules(*active_rule))
-		implication(output, implication, treshold)
+		implicate(output, implication, treshold)
 		outputs.append(output)
-	return agregation(outputs, agregation)
+	return agregate(outputs, agregation)
+
+def defuzzyficate(region, defuzzy):
+	if defuzzy == 'cda':
+		return region.cda()
+	if defuzzy == 'mdm':
+		return region.mdm()
+	if defuzzy == 'mpm':
+		return region.mpm()
+
+def classificate(classes, output, init=0, size=1):
+		normalized_output = (output-init)/size
+		pertinence = 0
+		for each_class in classes:
+			u = each_class.get_u(normalized_output)
+			if u >= pertinence:
+				if u == pertinence:
+					result = None
+				else:
+					pertinence = u
+					result = each_class
+		return result.name
