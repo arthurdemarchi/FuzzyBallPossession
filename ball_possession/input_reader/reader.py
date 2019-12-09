@@ -60,5 +60,8 @@ class Reader:
 
     def read_next_file(self):
         file_path = self.__list_of_files[self.__list_index]
-        self.__list_index += self.__list_index
-        return self.__read_from_path(file_path)
+        self.__list_index = self.__list_index + 1
+        distance, relative_speed, ball_speed = self.__read_from_path(file_path)
+        if self.__list_index >= len(self.__list_of_files):
+            return False, distance, relative_speed, ball_speed
+        return True, distance, relative_speed, ball_speed
