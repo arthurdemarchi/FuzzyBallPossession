@@ -1,26 +1,28 @@
 from .input_reader.reader import Reader
 from .functions.triangular import Triangular
+from .functions.trapezoid import Trapezoid
 from .fuzzy.region import Region
 from .graphics.plot_region import plot_region
 import pandas as pd
 
 ## CONSTANTS
-# PLAYER_SIZE = 0.3
-# PLAYER_BODY = 0.085
-
-# KM = 0.7
-# PMV = 1.2*1.05
-# KA = (PS + PB + KM)*1.05
-# DD = 1.2*2*1.05
+PS = 0.3 # PLAYER_SIZE
+PB = 0.085 # PLAYER_BODY
+CPD = PS+PB # CERTAIN POSSESSION DISTANCE
+KR = 0.7 # KICKABLE RADIUS
+KA = (PS + PB + KR)*1.05 # KICKABLE AREA
+DD = 1.2*2*1.05 # DASHABLE DISTANCE
+PMS = 1.2*1.05 # PLAYER MAXIMUM SPEED
+ 
 
 #create reader with default data path values
 reader = Reader()
 
 #create fuzzy input regions
 ## input 1: distance from player to ball
-dist_minor = Region('D3', 1000, 0, 100, Triangular(10, 20, 15, 1, 0).function)
-dist_fair = Region('D2', 1000, 0, 100, Triangular(10, 20, 15, 1, 0).function)
-dist_great = Region('D1', 1000, 0, 100, Triangular(10, 20, 15, 1, 0).function)
+dist_minor = Region('D3', 1000, 0, 100, Trapezoid(0, 1.5*CPD, 0, CPD).function)
+dist_fair = Region('D2', 1000, 0, 100, Triangular(CPD, 1.5*KA, KA).function)
+dist_great = Region('D1', 1000, 0, 100, Trapezoid(KA, 100, DD, 100).function)
 distance = [dist_minor, dist_fair, dist_great]
 
 ## input 2: relative speed from ball to player
