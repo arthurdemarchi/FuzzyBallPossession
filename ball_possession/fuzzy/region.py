@@ -22,8 +22,8 @@ class Region:
         self._init = None
         self._end = None
         self._size = None
-        self._function = None
         self._fuzzy = None
+        self._function = None
 
     ### Getters and Setter (as Properties) ###
     ## name

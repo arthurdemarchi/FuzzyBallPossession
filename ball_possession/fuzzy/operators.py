@@ -1,16 +1,18 @@
 from copy import deepcopy
 from .region import Region
-from ..functions import Constant
+from ..functions.constant import Constant
+from itertools import product
 
 def check_universe(regions):
-		init = regions[0].init
-		end = regions[0].end
-		npoints = regions[0].npoints
-		for region in regions:
-			if not (region.init == init and region.end == end):
-				raise ValueError('Error: Fuzzy regions are not in the same universe!')
-			if not region.npoints == npoints:
-				raise ValueError('Error: Fuzzy regions are not equaly discretized!')
+	init = regions[0].init
+	end = regions[0].end
+	npoints = regions[0].npoints
+	for region in regions:
+		if not (region.init == init and region.end == end):
+			raise ValueError('Error: Fuzzy regions are not in the same universe!')
+		if not region.npoints == npoints:
+			raise ValueError('Error: Fuzzy regions are not equaly discretized!')
+	return npoints, init, end
 
 def is_active(regions, x):
 	result = []
@@ -25,19 +27,20 @@ def is_active(regions, x):
 				result.append(region)
 	return result
 
-def union(regions, union_type='max'):
-	check_universe(regions)
-
-	result = Region('Região União', regions[0].npoints, regions[0].init, regions[0].end, Constant(0).function)
+def union(regions, union_type):
+	npoints, init, end = check_universe(regions)
+	result = Region('Região União', npoints, init, end, Constant(0).function)
+	union = deepcopy(result.fuzzy)
+	
 	for region in regions:
 		for i, item in enumerate(region.fuzzy):
 			if union_type == 'algebric_sum':
-				result.fuzzy[i]['u'] = item['u'] + result.fuzzy[i]['u'] - item['u']*result.fuzzy[i]['u']
-			else:
-				result.fuzzy[i]['u'] = max(item['u'], result.fuzzy[i]['u'])
-	result.update()
-	result.region_type = 'union'
-	return result
+				union[i]['u'] = item['u'] + union[i]['u'] - item['u']*union[i]['u']
+			if union_type == 'max':
+				union[i]['u'] = max(item['u'], union[i]['u'])
+	
+	result.fuzzy = union
+	return result 
 
 def implication(region, implication, treshold):
 	if implication == 'mandani':
@@ -49,11 +52,19 @@ def implication(region, implication, treshold):
 
 def agregation(regions, agregation):
 	if agregation == 'max':
-		return union(regions)
+		return union(regions, 'max')
 	if agregation == 'no_agregation':
 		return regions
 
-def inference_with_one_input(self, inputs, x, rules, implication, agregation):
+def get_treshold(active_regions, x):
+	if not len(active_regions) == len(x):
+		raise ValueError('Error: Number of value inputs and active regions are not the same.')
+	treshold = 999
+	for i in range(len(active_regions)):
+		treshold = min(treshold, active_regions[i].get_u(x[i]))
+	return treshold
+
+def mono_inference(self, inputs, x, rules, implication, agregation):
 	actives = is_active(inputs, x)
 	outputs = []
 	for active in actives:
@@ -61,33 +72,18 @@ def inference_with_one_input(self, inputs, x, rules, implication, agregation):
 		output = deepcopy(rules(active))
 		implication(output, implication, treshold)
 		outputs.append(output)
-	return agregation(outputs, 'max')
-	
-# def inference_with_two_inputs(self, in_regions, x, rule_function, function_inputs=1, implication='mandani', agregation='max'):
-# 	#Encontrando todas as regiões ativas nos dois inputs
-# 	active_in_regions_a = self.is_active(in_regions[0], x[0])
-# 	active_in_regions_b = self.is_active(in_regions[1], x[1])
-# 	#criando lista de saida
-# 	output_regions = []
-# 	#Para cada combinação Possível de Entradas Ativas dos Inputs
-# 	for active_in_a in active_in_regions_a:
-# 		for active_in_b in active_in_regions_b:
-# 			#encontra o treshold baseado na regra do min (E)
-# 			treshold = min(active_in_a.get_u(x[0]), active_in_b.get_u(x[1]))
-# 			#econtra região de saída a partir do set de regras
-# 			output_region = deepcopy(rule_function(active_in_a, active_in_b))
-# 			#Aplica função de implicação na região encontrada com o treshold definido
-# 			if implication == 'mandani':
-# 				output_region.mandani(treshold)
-# 			elif implication == 'zadeh':
-# 				output_region.zadeh(treshold)
-# 			elif implication == 'larsen':
-# 				output_region.larsen(treshold)
-# 			#Adiciona a região de saída contabilizada à lista de regiões de saída ativas
-# 			output_regions.append(output_region)
-# 	if agregation == 'max':
-# 		final_output = self.union(output_regions)
-# 	if agregation == 'no_agregation':
-# 		final_output = output_regions
+	return agregation(outputs, agregation)
 
-# 	return final_output
+def inference(self, inputs, x, rules, implication, agregation):
+	active = []
+	outputs = []
+	for i in range(len(inputs)):
+		active.append(is_active(inputs[i], x[i]))
+	
+	active_rules = product(*active)
+	for active_rule in active_rules:
+		treshold = get_treshold(active_rule, x)
+		output = deepcopy(rules(*active_rule))
+		implication(output, implication, treshold)
+		outputs.append(output)
+	return agregation(outputs, agregation)
