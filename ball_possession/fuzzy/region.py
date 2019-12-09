@@ -171,3 +171,11 @@ class Region:
             region_item = {'x': x, 'u': u}
             fuzzy.append(region_item)
         return fuzzy
+    
+    ### Methods ###
+    def get_u(self, x):
+        for i, item in enumerate(self.fuzzy):
+            if x == item['x']:
+                return item['u']
+            if x < item['x']:
+                return self.fuzzy[i-1]['u']
